@@ -32,6 +32,7 @@ import org.apache.flink.runtime.client.JobStatusMessage;
 
 import io.javaoperatorsdk.operator.api.reconciler.Context;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,6 +60,9 @@ public class ApplicationObserver extends AbstractDeploymentObserver {
                     protected Optional<JobStatusMessage> filterTargetJob(
                             JobStatus status, List<JobStatusMessage> clusterJobStatuses) {
                         if (!clusterJobStatuses.isEmpty()) {
+                            clusterJobStatuses.sort(
+                                    Comparator.comparingLong(JobStatusMessage::getStartTime)
+                                            .reversed());
                             return Optional.of(clusterJobStatuses.get(0));
                         }
                         return Optional.empty();
